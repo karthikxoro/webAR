@@ -4,13 +4,39 @@ const ARViewer = ({ modelURL }) => {
   const [modelPosition, setModelPosition] = useState("0 0 0");
 
   useEffect(() => {
+  async function enableCamera() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const videoElement = document.createElement("video");
+      videoElement.srcObject = stream;
+      videoElement.autoplay = true;
+      videoElement.style.position = "absolute";
+      videoElement.style.top = "0";
+      videoElement.style.left = "0";
+      videoElement.style.width = "100vw";
+      videoElement.style.height = "100vh";
+      videoElement.style.objectFit = "cover";
+      document.body.appendChild(videoElement);
+      console.log("Camera feed enabled!");
+    } catch (error) {
+      console.error("Camera access denied!", error);
+    }
+  }
+  enableCamera();
+}, []);
+
+  useEffect(() => {
     console.log("AR Mode Loaded");
 
-    navigator.mediaDevices.getUserMedia({ video: true }).then(() => {
-      console.log("Camera access granted!");
-    }).catch(() => {
-      console.error("Camera access denied!");
-    });
+    async function enableCamera() {
+      try {
+        await navigator.mediaDevices.getUserMedia({ video: true });
+        console.log("Camera access granted!");
+      } catch (error) {
+        console.error("Camera access denied!", error);
+      }
+    }
+    enableCamera();
 
     document.addEventListener("click", (event) => {
       const touchX = event.clientX;
@@ -30,13 +56,13 @@ const ARViewer = ({ modelURL }) => {
   }, []);
 
   return (
-  <a-scene embedded arjs id="ar-scene" visible="true">
-    <a-marker-camera>
-      <a-entity gltf-model={modelURL} position="0 0 0" scale="1 1 1"></a-entity>
-    </a-marker-camera>
-    <a-entity camera></a-entity>
-  </a-scene>
-);
+    <a-scene embedded arjs id="ar-scene">
+      <a-marker-camera>
+        <a-entity gltf-model={modelURL} position="0 0 0" scale="1 1 1"></a-entity>
+      </a-marker-camera>
+      <a-entity camera></a-entity>
+    </a-scene>
+  );
 };
 
 export default ARViewer;
