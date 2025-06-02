@@ -30,18 +30,13 @@ const ARViewer = ({ modelURL }) => {
   }, []);
 
   return (
-    <a-scene embedded arjs>
-      <a-marker-camera>
-        <a-entity
-          gltf-model={modelURL}
-          position={modelPosition}
-          scale="1 1 1"
-          rotation="0 0 0"
-        ></a-entity>
-      </a-marker-camera>
-      <a-entity camera></a-entity>
-    </a-scene>
-  );
+  <a-scene embedded arjs id="ar-scene" visible="true">
+    <a-marker-camera>
+      <a-entity gltf-model={modelURL} position="0 0 0" scale="1 1 1"></a-entity>
+    </a-marker-camera>
+    <a-entity camera></a-entity>
+  </a-scene>
+);
 };
 
 export default ARViewer;
