@@ -3,10 +3,14 @@ import { useEffect, useState } from "react";
 const ARViewer = ({ modelURL }) => {
   const [modelPosition, setModelPosition] = useState("0 0 0");
 
-  useEffect(() => {
-  async function enableCamera() {
+useEffect(() => {
+  async function enableBackCamera() {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment" }  // Forces the back camera
+      });
+      console.log("Back Camera Access Granted!");
+
       const videoElement = document.createElement("video");
       videoElement.srcObject = stream;
       videoElement.autoplay = true;
@@ -17,12 +21,12 @@ const ARViewer = ({ modelURL }) => {
       videoElement.style.height = "100vh";
       videoElement.style.objectFit = "cover";
       document.body.appendChild(videoElement);
-      console.log("Camera feed enabled!");
     } catch (error) {
       console.error("Camera access denied!", error);
     }
   }
-  enableCamera();
+
+  enableBackCamera();
 }, []);
 
   useEffect(() => {
@@ -45,6 +49,16 @@ const ARViewer = ({ modelURL }) => {
       console.log("Model placed at:", modelPosition);
     });
 
+    useEffect(() => {
+  document.addEventListener("click", (event) => {
+    const touchX = event.clientX;
+    const touchY = event.clientY;
+    const newPosition = convertToARSpace(touchX, touchY);
+    setModelPosition(newPosition);
+    console.log("Model placed at:", newPosition);
+  });
+}, []);
+
     const canvas = document.querySelector("canvas");
     if (canvas) {
       canvas.addEventListener("webglcontextlost", (event) => {
@@ -58,7 +72,12 @@ const ARViewer = ({ modelURL }) => {
   return (
     <a-scene embedded arjs id="ar-scene">
       <a-marker-camera>
-        <a-entity gltf-model={modelURL} position="0 0 0" scale="1 1 1"></a-entity>
+        <a-entity
+  id="placed-model"
+  gltf-model={modelURL}
+  position={modelPosition}
+  scale="1 1 1"
+></a-entity>
       </a-marker-camera>
       <a-entity camera></a-entity>
     </a-scene>
