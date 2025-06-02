@@ -35,16 +35,16 @@ const ARViewer = ({ modelURL }) => {
   }, []);
 
 
-  useEffect(() => {
+ useEffect(() => {
   const handleTap = (event) => {
-    const touchX = event.clientX;
-    const touchY = event.clientY;
+    const touchX = event.touches[0].clientX;
+    const touchY = event.touches[0].clientY;
     setModelPosition(`${touchX / 100} ${touchY / 100} -2`);
     console.log("Model placed at:", touchX, touchY);
   };
 
-  document.addEventListener("click", handleTap);
-  return () => document.removeEventListener("click", handleTap); // Cleanup
+  document.addEventListener("touchstart", handleTap);
+  return () => document.removeEventListener("touchstart", handleTap); // Cleanup
 }, []);
 
 useEffect(() => {
