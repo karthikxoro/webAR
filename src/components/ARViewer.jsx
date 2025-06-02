@@ -3,14 +3,15 @@ import { useEffect, useState } from "react";
 const ARViewer = ({ modelURL }) => {
   const [modelPosition, setModelPosition] = useState("0 0 0");
 
-useEffect(() => {
+ useEffect(() => {
   async function enableBackCamera() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" }  // Forces the back camera
+        video: { facingMode: "environment" }  // Forces back camera
       });
       console.log("Back Camera Access Granted!");
 
+      // Create video element & attach stream
       const videoElement = document.createElement("video");
       videoElement.srcObject = stream;
       videoElement.autoplay = true;
@@ -31,56 +32,28 @@ useEffect(() => {
 
   useEffect(() => {
     console.log("AR Mode Loaded");
-
-    async function enableCamera() {
-      try {
-        await navigator.mediaDevices.getUserMedia({ video: true });
-        console.log("Camera access granted!");
-      } catch (error) {
-        console.error("Camera access denied!", error);
-      }
-    }
-    enableCamera();
-
-    document.addEventListener("click", (event) => {
-      const touchX = event.clientX;
-      const touchY = event.clientY;
-      setModelPosition(`${touchX / 100} ${touchY / 100} -2`);
-      console.log("Model placed at:", modelPosition);
-    });
-
-    useEffect(() => {
-  document.addEventListener("click", (event) => {
-    const touchX = event.clientX;
-    const touchY = event.clientY;
-    const newPosition = convertToARSpace(touchX, touchY);
-    setModelPosition(newPosition);
-    console.log("Model placed at:", newPosition);
-  });
-}, []);
-
-    const canvas = document.querySelector("canvas");
-    if (canvas) {
-      canvas.addEventListener("webglcontextlost", (event) => {
-        console.error("WebGL context lost! Restarting...");
-        event.preventDefault();
-        setTimeout(() => window.location.reload(), 500);
-      });
-    }
   }, []);
 
+
+  useEffect(() => {
+  const handleTap = (event) => {
+    const touchX = event.clientX;
+    const touchY = event.clientY;
+    setModelPosition(`${touchX / 100} ${touchY / 100} -2`);
+    console.log("Model placed at:", touchX, touchY);
+  };
+
+  document.addEventListener("click", handleTap);
+  return () => document.removeEventListener("click", handleTap); // Cleanup
+}, []);
+
   return (
-    <a-scene embedded arjs id="ar-scene">
-      <a-marker-camera>
-        <a-entity
-  id="placed-model"
-  gltf-model={modelURL}
-  position={modelPosition}
-  scale="1 1 1"
-></a-entity>
-      </a-marker-camera>
-      <a-entity camera></a-entity>
-    </a-scene>
+    <a-scene embedded arjs="sourceType: webcam;">
+  <a-marker-camera>
+    <a-entity gltf-model={modelURL} position={modelPosition} scale="1 1 1"></a-entity>
+  </a-marker-camera>
+  <a-entity camera></a-entity>
+</a-scene>
   );
 };
 
