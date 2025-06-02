@@ -6,6 +6,12 @@ const ARViewer = ({ modelURL }) => {
   useEffect(() => {
     console.log("AR Mode Loaded");
 
+    navigator.mediaDevices.getUserMedia({ video: true }).then(() => {
+      console.log("Camera access granted!");
+    }).catch(() => {
+      console.error("Camera access denied!");
+    });
+
     document.addEventListener("click", (event) => {
       const touchX = event.clientX;
       const touchY = event.clientY;
