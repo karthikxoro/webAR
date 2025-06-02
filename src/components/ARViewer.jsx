@@ -47,10 +47,15 @@ const ARViewer = ({ modelURL }) => {
   return () => document.removeEventListener("click", handleTap); // Cleanup
 }, []);
 
+useEffect(() => {
+  console.log("Model Position Updated:", modelPosition);
+}, [modelPosition]);
+
+
   return (
     <a-scene embedded arjs="sourceType: webcam;">
   <a-marker-camera>
-    <a-entity gltf-model={modelURL} position={modelPosition} scale="1 1 1"></a-entity>
+   <a-entity gltf-model={modelURL} position={modelPosition} scale="1 1 1"></a-entity>
   </a-marker-camera>
   <a-entity camera></a-entity>
 </a-scene>
