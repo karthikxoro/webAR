@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 const ARViewer = ({ modelURL }) => {
-  const [modelPosition, setModelPosition] = useState("0 0 0");
+  const [modelPosition, setModelPosition] = useState("0 -2 0");
 
  useEffect(() => {
   async function enableBackCamera() {
@@ -55,7 +55,7 @@ useEffect(() => {
   return (
     <a-scene embedded arjs="sourceType: webcam;">
   <a-marker-camera>
-   <a-entity gltf-model={modelURL} position={modelPosition} scale="1 1 1"></a-entity>
+   <a-entity gltf-model={modelURL} position={modelPosition} scale="3 3 3"></a-entity>
   </a-marker-camera>
   <a-entity camera></a-entity>
 </a-scene>
